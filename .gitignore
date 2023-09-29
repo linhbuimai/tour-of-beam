@@ -1,3 +1,8 @@
+# to ignore output result from Direct Runner test
+
+output/**
+output/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
