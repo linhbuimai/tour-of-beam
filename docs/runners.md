@@ -1,7 +1,7 @@
 # Concepts: Runners
 
 `pipeline` = data-parallel processing
-`runners` = execution engines (to execute pipeline)
+`runners` = execution engines (what back-end the pipeline runs on)
 
 Layer `runners` based on the core concept of Beam Model (formally Dataflow Model).
 

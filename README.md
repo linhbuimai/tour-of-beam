@@ -27,3 +27,6 @@ $ pip install 'apache-beam[docs]'
 
 Source to Beam's examples: [github: apache_beam/examples](https://github.com/apache/beam/tree/master/sdks/python/apache_beam/examples)
 
+# References
+
+1. [Official Beam: Learning Resources](https://beam.apache.org/get-started/resources/learning-resources/)
