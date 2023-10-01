@@ -5,7 +5,7 @@
 
 Layer `runners` based on the core concept of Beam Model (formally Dataflow Model).
 
-- [ ] TODO: Get to know the Beam Model concepts
+- [ ] TODO: Get to know the [Beam Model concepts](https://beam.apache.org/documentation/basics/)
 
 Types of runners:
 
