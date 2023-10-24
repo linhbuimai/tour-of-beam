@@ -23,6 +23,12 @@ Optional installations:
 $ pip install 'apache-beam[docs]'
 ```
 
+Format python files:
+
+```bash
+$ python -m black src
+```
+
 ### Step 2: Get examples to learn
 
 Source to Beam's examples: [github: apache_beam/examples](https://github.com/apache/beam/tree/master/sdks/python/apache_beam/examples)
