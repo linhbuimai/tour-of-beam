@@ -1,4 +1,4 @@
-# Concepts: Pipeline
+## Concepts: Pipeline
 
 Create a ==driver program== to define pipeline:
 
@@ -9,7 +9,8 @@ Create a ==driver program== to define pipeline:
 
 Beam abstractions work with both batch and streaming data sources (that's the reason for: Unified processing).
 
-## Beam abstractions
+## Create `Pipeline`
 
-`Pipeline` = the whole data processing task (from start to finish)
-`PCollection` = 
+Note:
+- A beam program starts by creating `Pipeline`
+- A `Pipeline` requires some "configurations" in order to run properly, in which should pay attention to Runner and Runtime Variables
