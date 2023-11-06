@@ -45,7 +45,7 @@ function `process` of `DoFn` object:
 - return an iterable with its output values
     + using `yield` statements
     + using an iterable like: a list, a generator, etc.
-- in case the input PCollection are key/value pair --> process element method must have two parameters for each key and value
+- in case the input PCollection are key/value pair --> processed element method must have two parameters for each key and value
 
 example:
 

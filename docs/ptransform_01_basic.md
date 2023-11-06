@@ -18,7 +18,6 @@ Possible implementations of filter:
     + Side inputs as iterators (an array of multiple values)
     + Side inputs as dictionaries (a dictionary)
 
-
 ## Aggregations
 
 Common aggregations: count, sum, mean, min, max
@@ -64,4 +63,4 @@ beam.combiners.Top.Largest(5) <-- find top 5 largest number in a list of integer
 
 It takes a `PCollection<V>` and produces a `PCollection<KV<K,V>>`
 
-- [ ] TODO Learn how to filter the input having type map
+- [ ] TODO: Learn how to filter the input having type map
