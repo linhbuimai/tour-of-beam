@@ -42,7 +42,7 @@ word_lengths = input | beam.ParDo(ComputeWordLengthFn())
 
 function `process` of `DoFn` object:
 - input element
-- return an iterable with its output values
+- **return an iterable** with its output values
     + using `yield` statements
     + using an iterable like: a list, a generator, etc.
 - in case the input PCollection are key/value pair --> processed element method must have two parameters for each key and value
@@ -55,9 +55,10 @@ class ComputeWordLengthFn(beam.DoFn):
         return [len(element)]
 ```
 
->  (??) your implementation of DoFn should idempotent regardless of number of invocation. As such, you should not in any way modify the parameters provided to the `ProcessElement` method, or any side inputs.
+> Beam does not guarantee the number of invocation (a `DoFn` instance can be invoked multiple times) your implementation of DoFn should idempotent regardless of number of invocation. -->  should not modify the parameters provided to the `ProcessElement` method; should not modify any side inputs --> Not change the output value once emitted it.
 
-Additional parameters in `DoFn` `process` method:
+Can populate additional parameters to `DoFn.process()`:
+
 1. Timestamp: access timestamp of an input element
 2. Window: access the window that input element falls into
 3. PaneInfo: access the information of current firing (the firing of a window):
@@ -65,3 +66,16 @@ Additional parameters in `DoFn` `process` method:
     + how many times this window has already fired for this key
 4. Timer and State: user defined timer and state
 
+## Built-in `DoFn`
+
+--> `beam.Map` ; `beam.FlatMap`
+
+### `beam.Map`
+
+- applies a user-defined function to each element in the input PCollection
+- one-one type output
+
+### `beam.FlatMap`
+
+- applies a user-defined function to each element in the input PCollection
+- could be one to zero/one/many type output
