@@ -45,6 +45,19 @@ def pardo_with_flatmap():
             | Output()
         )
 
+def pardo_with_groupbykey():
+    with beam.Pipeline() as p:
+        input = p | "Fruit" >> beam.Create([("banana", 2),
+                                            ("apple", 4),
+                                            ("lemon", 3),
+                                            ("Apple", 1),
+                                            ("Banana", 5),
+                                            ("Lemon", 2)])
+        
+        input.apply(
+            "Lower case", beam.ParDo()
+        )
+
 
 if __name__ == "__main__":
     # pardo_one_many()

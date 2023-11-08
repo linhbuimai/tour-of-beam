@@ -79,3 +79,19 @@ Can populate additional parameters to `DoFn.process()`:
 
 - applies a user-defined function to each element in the input PCollection
 - could be one to zero/one/many type output
+
+### `GroupByKey`
+
+- Group elements in PCollection by keys.
+- Input = PCollection of key-value pairs
+- Output = PCollection of key-[group of values] pairs
+
+--> is a transform of multi-map to uni-map (uni=unique)
+
+Also: `GroupBy` <-- custom parameterize the behavior of the `GroupByKey`, by either define a value to be grouped, or receive a function to determine how each value in the PCollection is grouped.
+
+**Working with unbounded PCollection**
+- To perform `GroupByKey/CoGroupByKey` over unbounded PCollection, one must use non-global window, or an aggregation trigger, or both.
+    + all elements in PCollection must follow the same window strategy, window sizing
+    + (similarly) use the same aggregation trigger
+
