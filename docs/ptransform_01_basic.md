@@ -2,7 +2,7 @@
 
 (common and core transforms in Apache Beam)
 
-- [ ] (?) `ParDo` and `DoFn`?
+- [x] (?) `ParDo` and `DoFn`?
 
 ## Filter
 

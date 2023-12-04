@@ -14,7 +14,9 @@ Beam abstractions work with both batch and streaming data sources (that's the re
 Note:
 - A beam program starts by creating `Pipeline`
 - A `Pipeline` requires some "configurations" in order to run properly, in which should pay attention to Runner and Runtime Variables
+
 `Pipeline` = the whole data processing task (from start to finish)
+
 `PCollection` = distributed datasets, input/output of each step of the pipeline, could be bounded/unbounded stream, is immutable.
 
 `PTransform` = a data processing operation (a step in the pipeline), receive one or mote PCollection as input, produce zero/one/or more PCollection as output.

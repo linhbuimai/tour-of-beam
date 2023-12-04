@@ -36,6 +36,7 @@ Source to Beam's examples: [github: apache_beam/examples](https://github.com/apa
 # References
 
 1. [Official Beam: Learning Resources](https://beam.apache.org/get-started/resources/learning-resources/)
+2. [Personal mindmap: Apache Beam Programming Guide](https://miro.com/app/board/uXjVNHS7Wn0=/)
 
 # Beam Abstractions
 

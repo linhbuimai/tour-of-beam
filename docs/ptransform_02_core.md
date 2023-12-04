@@ -9,6 +9,7 @@
 #### Intro to `ParDo`
 
 `ParDo` is similar to map phase in `map-shuffle-reduce`-style algorithm.
+
 A `ParDo` transform considers each element in the input `PCollection`, performs processing function (`process`) on that element, then emits zero, one, or multiple elements to an output `PCollection`.
 
 `ParDo` can benefit:
@@ -91,6 +92,7 @@ Can populate additional parameters to `DoFn.process()`:
 Also: `GroupBy` <-- custom parameterize the behavior of the `GroupByKey`, by either define a value to be grouped, or receive a function to determine how each value in the PCollection is grouped.
 
 **Working with unbounded PCollection**
+
 - To perform `GroupByKey/CoGroupByKey` over unbounded PCollection, one must use non-global window, or an aggregation trigger, or both.
     + all elements in PCollection must follow the same window strategy, window sizing
     + (similarly) use the same aggregation trigger
