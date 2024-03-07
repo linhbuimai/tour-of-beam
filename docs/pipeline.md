@@ -56,3 +56,21 @@ Two ways of configuring pipeline options:
 
 > [!Note]
 > The second method is preferable due to its transparency.
+
+We should parameterized `PipelineOptions`, example:
+
+```python
+parser = argparse.ArgumentParser()
+parser.add_argument(
+  "--secret_prefix",
+  required=True,
+  help="Secret Prefix to trigger Automation Or Manual Pipeline",
+)
+parser.add_argument(
+  "--pipeline_name",
+  required=True,
+  help="Pipeline Name to trigger Automation Or Manual Pipeline",
+)
+
+known_args, pipeline_args = parser.parse_known_args()
+```
