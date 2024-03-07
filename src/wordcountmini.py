@@ -61,25 +61,7 @@ class WordExtractingDoFn(beam.DoFn):
       The processed element.
     """
     return re.findall(r'[\w\']+', element, re.UNICODE)
-  
-  # how to use explicit do function:
-  # formatted = counts | 'Format' >> beam.ParDo(FormatAsTextFn())
 
-class FormatAsTextFn(beam.DoFn):
-  def process(self, element):
-    word, count = element
-    yield '%s: %s' % (word, count)
-
-# Create composite transform
-@beam.ptransform_fn
-def CountWords(input):
-  return (
-    input | 'ExtractWords' >> beam.FlatMap(lambda x: re.findall(r'[A-Za-z\']+', x))
-          | "CountWords" >> beam.combiners.Count.PerElement()
-  )
-
-# how to use the above composite transform
-# counts = lines | 'Count words' >> CountWords()
 
 def run(argv=None, save_main_session=True):
   """Main entry point; defines and runs the wordcount pipeline."""
