@@ -8,7 +8,8 @@
 
 #### Intro to `ParDo`
 
-`ParDo` is similar to map phase in `map-shuffle-reduce`-style algorithm.
+`ParDo` is similar to map phase in `map-shuffle-reduce`-style algorithm. (ParDo means parallel do function)
+
 A `ParDo` transform considers each element in the input `PCollection`, performs processing function (`process`) on that element, then emits zero, one, or multiple elements to an output `PCollection`.
 
 `ParDo` can benefit:
@@ -36,9 +37,9 @@ word_lengths = input | beam.ParDo(ComputeWordLengthFn())
 - having `process` function containing user-defined transform logic
 - should always contains `__init__` block (otherwise they may not execute on distributed runners)
 
-> Pay attention to: Requirements for writing user code for Beam transforms. <??>
+> Pay attention to: Requirements for writing user code for Beam transforms.
 
-- [ ] TODO: know what are requirements for writing user code for beam transforms?
+- [x] [know what are requirements for writing user code for beam transforms?](https://beam.apache.org/documentation/programming-guide/#requirements-for-writing-user-code-for-beam-transforms) --> serializable, thread-compability, idempotence
 
 function `process` of `DoFn` object:
 - input element
@@ -91,6 +92,7 @@ Can populate additional parameters to `DoFn.process()`:
 Also: `GroupBy` <-- custom parameterize the behavior of the `GroupByKey`, by either define a value to be grouped, or receive a function to determine how each value in the PCollection is grouped.
 
 **Working with unbounded PCollection**
+
 - To perform `GroupByKey/CoGroupByKey` over unbounded PCollection, one must use non-global window, or an aggregation trigger, or both.
     + all elements in PCollection must follow the same window strategy, window sizing
     + (similarly) use the same aggregation trigger

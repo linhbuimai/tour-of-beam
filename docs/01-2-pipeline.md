@@ -14,7 +14,9 @@ Beam abstractions work with both batch and streaming data sources (that's the re
 Note:
 - A beam program starts by creating `Pipeline`
 - A `Pipeline` requires some "configurations" in order to run properly, in which should pay attention to Runner and Runtime Variables
+
 `Pipeline` = the whole data processing task (from start to finish)
+
 `PCollection` = distributed datasets, input/output of each step of the pipeline, could be bounded/unbounded stream, is immutable.
 
 `PTransform` = a data processing operation (a step in the pipeline), receive one or mote PCollection as input, produce zero/one/or more PCollection as output.
@@ -54,3 +56,21 @@ Two ways of configuring pipeline options:
 
 > [!Note]
 > The second method is preferable due to its transparency.
+
+We should parameterized `PipelineOptions`, example:
+
+```python
+parser = argparse.ArgumentParser()
+parser.add_argument(
+  "--secret_prefix",
+  required=True,
+  help="Secret Prefix to trigger Automation Or Manual Pipeline",
+)
+parser.add_argument(
+  "--pipeline_name",
+  required=True,
+  help="Pipeline Name to trigger Automation Or Manual Pipeline",
+)
+
+known_args, pipeline_args = parser.parse_known_args()
+```
