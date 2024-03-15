@@ -1,5 +1,5 @@
 import apache_beam as beam
-from utils import Output
+from src.utils import Output
 
 import re
 
@@ -14,34 +14,30 @@ Translate the first and second elements of the array to lowercase,
   combine the resulting collections and group them by key
 """
 
-path_to_file = 'gs://apache-beam-samples/shakespeare/kinglear.txt'
-
 # Split input text to words
 class SplitWords(beam.DoFn):
     def process(self, element):
         return re.findall(r'[\w\']+', element, re.UNICODE)
     
-def words_partition(element, num_of_partitions):
+def words_partition(element: str) -> int:
     if element[0].isupper():
-        return 0
-    elif element.islower(): # list not accept the method islower
-        return 2
+        return ("group-01", element)
+    elif list(filter(str.isupper, element)):
+        return ("group-02", element)
     else:
-        return 1
-        
+        return ("group-03", element)
+
+
+if __name__ == "__main__":
+    path_to_file = 'gs://apache-beam-samples/shakespeare/kinglear.txt'
+    with beam.Pipeline() as p:
+        words = (
+            p 
+            | "Read text file" >> beam.io.ReadFromText(path_to_file)
+            | "Split words" >> beam.ParDo(SplitWords())
+        )
+
+        # get sample words for process
+        sample_words = words | beam.combiners.Sample.FixedSizeGlobally(100)
+        sample_words | "Mapping to correct group" >> beam.Map(words_partition) | Output()
     
-with beam.Pipeline() as p:
-    words = (
-        p 
-        | "Read text file" >> beam.io.ReadFromText(path_to_file)
-        | "Split words" >> beam.ParDo(SplitWords())
-    )
-
-    # get sample words for process
-    sample_words = words | beam.combiners.Sample.FixedSizeGlobally(100)
-    parts = sample_words | beam.Partition(words_partition, 3)
-
-    parts[0] | "Output 0" >> Output()
-    parts[1] | "Output 1" >> Output()
-    parts[2] | "Output 2" >> Output()
-

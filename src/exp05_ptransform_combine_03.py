@@ -31,6 +31,6 @@ with beam.Pipeline() as p:
    | beam.Create(input)
    | beam.CombinePerKey(ConcatString())
    | beam.Map(len_values)
-   | beam.Filter(lambda values: values[1] > 10)
+  #  | beam.Filter(lambda values: values[1] > 10)
    | Output()
   )
