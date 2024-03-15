@@ -2,6 +2,7 @@ import apache_beam as beam
 from src.utils import Output
 
 import re
+from typing import Any
 
 """
 You are given the works of Shakespeare "kinglear" it will be divided into words and filtered.
@@ -18,8 +19,8 @@ Translate the first and second elements of the array to lowercase,
 class SplitWords(beam.DoFn):
     def process(self, element):
         return re.findall(r'[\w\']+', element, re.UNICODE)
-    
-def words_partition(element: str) -> int:
+
+def words_partition(element: str) -> tuple:
     if element[0].isupper():
         return ("group-01", element)
     elif list(filter(str.isupper, element)):
@@ -27,9 +28,17 @@ def words_partition(element: str) -> int:
     else:
         return ("group-03", element)
 
+class WordsClassifier(beam.DoFn):
+    def process(self, element):
+        if element[0].isupper():
+            return ("group-01", element)
+        else:
+            return None
+
 
 if __name__ == "__main__":
     path_to_file = 'gs://apache-beam-samples/shakespeare/kinglear.txt'
+    test = ['Bear', 'This', 'I', 'for', 'Now', 'place', 'Why', 'offence', 'ruffian', 'me']
     with beam.Pipeline() as p:
         words = (
             p 
@@ -38,6 +47,6 @@ if __name__ == "__main__":
         )
 
         # get sample words for process
-        sample_words = words | beam.combiners.Sample.FixedSizeGlobally(100)
-        sample_words | "Mapping to correct group" >> beam.Map(words_partition) | Output()
+        sample_words = words | beam.combiners.Sample.FixedSizeGlobally(10)
+        sample_words | beam.ParDo(WordsClassifier()) | Output()
     
