@@ -16,37 +16,51 @@ Translate the first and second elements of the array to lowercase,
 """
 
 # Split input text to words
-class SplitWords(beam.DoFn):
-    def process(self, element):
-        return re.findall(r'[\w\']+', element, re.UNICODE)
+def split_words(sentence):
+    return re.findall(r'[\w\']+', sentence, re.UNICODE)
 
-def words_partition(element: str) -> tuple:
-    if element[0].isupper():
-        return ("group-01", element)
-    elif list(filter(str.isupper, element)):
-        return ("group-02", element)
+def partition_fn(word, num_partitions):
+    if word.upper() == word:
+        return 0
+    elif word[0].isupper():
+        return 1
     else:
-        return ("group-03", element)
-
-class WordsClassifier(beam.DoFn):
-    def process(self, element):
-        if element[0].isupper():
-            return ("group-01", element)
-        else:
-            return None
+        return 2
 
 
 if __name__ == "__main__":
     path_to_file = 'gs://apache-beam-samples/shakespeare/kinglear.txt'
-    test = ['Bear', 'This', 'I', 'for', 'Now', 'place', 'Why', 'offence', 'ruffian', 'me']
+    
     with beam.Pipeline() as p:
-        words = (
-            p 
-            | "Read text file" >> beam.io.ReadFromText(path_to_file)
-            | "Split words" >> beam.ParDo(SplitWords())
+        parts = (
+            p
+            | "Log lines" >> beam.io.ReadFromText(path_to_file)
+            | beam.combiners.Sample.FixedSizeGlobally(100)
+            | beam.FlatMap(lambda line: line)
+            | beam.FlatMap(lambda sentence: split_words(sentence))
+            | beam.Partition(partition_fn, 3)
         )
 
-        # get sample words for process
-        sample_words = words | beam.combiners.Sample.FixedSizeGlobally(10)
-        sample_words | beam.ParDo(WordsClassifier()) | Output()
-    
+        allLetterUpperCase = (
+            parts[0] 
+            | 'All upper' >> beam.combiners.Count.PerElement() # return tupple: element, number of times this element exists
+            | beam.Map(lambda key: (key[0].lower(), key[1]))
+        )
+        
+        firstLetterUpperCase = (
+            parts[1]
+            | 'First upper' >> beam.combiners.Count.PerElement()
+            | beam.Map(lambda key: (key[0].lower(), key[1]))
+        )
+        
+        allLetterLowerCase = (
+            parts[2]
+            | 'Lower' >> beam.combiners.Count.PerElement()
+        )
+        
+        flattenPCollection = (
+            (allLetterUpperCase, firstLetterUpperCase, allLetterLowerCase)
+            | beam.Flatten()
+            | beam.GroupByKey()
+            | beam.io.WriteToText("output/challenge")
+        )
