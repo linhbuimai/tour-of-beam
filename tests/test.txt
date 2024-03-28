@@ -1,0 +1,139 @@
+case02_calculate_int = 
+var p1 = case02_period_range_p1[case02_period_range_p1 Value]
+var p2 = case02_period_range_p2[case02_period_range_p2 Value]
+
+var r1 = case02_interest_rate_p1[case02_interest_rate_p1_value]
+var r2 = case02_interest_rate_p2[case02_interest_rate_p2_value]
+var r3 = case02_interest_rate_p3[case02_interest_rate_p3_value]
+var r4 = case02_interest_rate_p3[case02_interest_rate_p3_value] * 1.5 -- this is overdue rate
+
+// Check rate of days_diff (dd)
+-- dd <= p1                     --> case_1 = pay at r1
+-- p1 < dd <= p1+p2             --> case_2 = pay at r1, r2
+-- p1+p2 < dd <= loan_term      --> case_3 = pay at r1, r2, r3
+-- loan_term < dd               --> case_4 = pay at r1, r2, r3, r4
+
+var case_1 = 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+            fct_margin_repayment[calculated_loan_amt] * r1 * fct_margin_repayment[calculated_days_diff], 
+            (360 * 100))),
+    fct_margin_repayment[days_diff] <= p1,
+    fct_margin_repayment[calculated_days_diff] > 0
+)
+
+var case_2 = 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r1 * (p1 - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r2 * (fct_margin_repayment[days_diff] - p1),
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] < p1,
+    fct_margin_repayment[days_diff] > p1 && fct_margin_repayment[days_diff] <= (p1+p2),
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+            fct_margin_repayment[calculated_loan_amt] * r2 * fct_margin_repayment[calculated_days_diff],
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= p1,
+    fct_margin_repayment[days_diff] > p1 && fct_margin_repayment[days_diff] <= (p1+p2),
+    fct_margin_repayment[calculated_days_diff] > 0
+)
+
+var case_3 = 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r1 * (p1 - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r2 * (p2)
+            + fct_margin_repayment[calculated_loan_amt] * r3 * (fct_margin_repayment[days_diff] - p1 - p2), 
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] < p1,
+    fct_margin_repayment[days_diff] > (p1+p2) && fct_margin_repayment[days_diff] <= fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r2 * (p1+p2 - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r3 * (fct_margin_repayment[days_diff] - p1 - p2),
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= p1 && fct_margin_repayment[previous_days_diff] < (p1+p2),
+    fct_margin_repayment[days_diff] > (p1+p2) && fct_margin_repayment[days_diff] <= fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+            fct_margin_repayment[calculated_loan_amt] * r3 * fct_margin_repayment[calculated_days_diff],
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= (p1+p2),
+    fct_margin_repayment[days_diff] > (p1+p2) && fct_margin_repayment[days_diff] <= fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
+
+var case_4 = 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r1 * (p1 - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r2 * p2
+            + fct_margin_repayment[calculated_loan_amt] * r3 * (fct_margin_repayment[calculated_loan_term] - p1 - p2)
+            + fct_margin_repayment[calculated_loan_amt] * r4 * (fct_margin_repayment[days_diff] - fct_margin_repayment[calculated_loan_term]), 
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] < p1,
+    fct_margin_repayment[days_diff] > fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++ 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r2 * (p1 + p2 - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r3 * (fct_margin_repayment[calculated_loan_term] - p1 -p2)
+            + fct_margin_repayment[calculated_loan_amt] * r4 * (fct_margin_repayment[days_diff] - fct_margin_repayment[calculated_loan_term]), 
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= p1 && fct_margin_repayment[previous_days_diff] < (p1+p2),
+    fct_margin_repayment[days_diff] > fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++ 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+              fct_margin_repayment[calculated_loan_amt] * r3 * (fct_margin_repayment[calculated_loan_term] - fct_margin_repayment[previous_days_diff])
+            + fct_margin_repayment[calculated_loan_amt] * r4 * (fct_margin_repayment[days_diff] - fct_margin_repayment[calculated_loan_term]), 
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= (p1+p2) && fct_margin_repayment[previous_days_diff] < fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[days_diff] > fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
++ 
+CALCULATE(
+    SUMX(
+        fct_margin_repayment,
+        DIVIDE(
+            fct_margin_repayment[calculated_loan_amt] * r4 * fct_margin_repayment[calculated_days_diff], 
+            (360*100))),
+    fct_margin_repayment[previous_days_diff] >= fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[days_diff] > fct_margin_repayment[calculated_loan_term],
+    fct_margin_repayment[calculated_days_diff] > 0
+)
+
+return case_1 + case_2 + case_3 + case_4
