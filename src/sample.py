@@ -17,17 +17,18 @@
 
 import apache_beam as beam
 
+
 # Output PCollection
 class Output(beam.PTransform):
     class _OutputFn(beam.DoFn):
-        def __init__(self, prefix=''):
+        def __init__(self, prefix=""):
             super().__init__()
             self.prefix = prefix
 
         def process(self, element):
-            print(self.prefix+str(element))
+            print(self.prefix + str(element))
 
-    def __init__(self, label=None,prefix=''):
+    def __init__(self, label=None, prefix=""):
         super().__init__(label)
         self.prefix = prefix
 
@@ -36,7 +37,7 @@ class Output(beam.PTransform):
 
 
 def partition_fn(word, num_partitions):
-    if word.upper()==word:
+    if word.upper() == word:
         return 0
     if word[0].isupper():
         return 1
@@ -45,17 +46,31 @@ def partition_fn(word, num_partitions):
 
 
 with beam.Pipeline() as p:
-  parts = p | 'Log lines' >> beam.io.ReadFromText('gs://apache-beam-samples/shakespeare/kinglear.txt') \
-            | beam.combiners.Sample.FixedSizeGlobally(100) \
-            | beam.FlatMap(lambda line: line) \
-            | beam.FlatMap(lambda sentence: sentence.split()) \
-            | beam.Partition(partition_fn, 3)
+    parts = (
+        p
+        | "Log lines"
+        >> beam.io.ReadFromText("gs://apache-beam-samples/shakespeare/kinglear.txt")
+        | beam.combiners.Sample.FixedSizeGlobally(100)
+        | beam.FlatMap(lambda line: line)
+        | beam.FlatMap(lambda sentence: sentence.split())
+        | beam.Partition(partition_fn, 3)
+    )
 
-  allLetterUpperCase = parts[0] | 'All upper' >> beam.combiners.Count.PerElement() | beam.Map(lambda key: (key[0].lower(),key[1]))
-  firstLetterUpperCase = parts[1] | 'First upper' >> beam.combiners.Count.PerElement() | beam.Map(lambda key: (key[0].lower(),key[1]))
-  allLetterLowerCase = parts[2] | 'Lower' >> beam.combiners.Count.PerElement()
+    allLetterUpperCase = (
+        parts[0]
+        | "All upper" >> beam.combiners.Count.PerElement()
+        | beam.Map(lambda key: (key[0].lower(), key[1]))
+    )
+    firstLetterUpperCase = (
+        parts[1]
+        | "First upper" >> beam.combiners.Count.PerElement()
+        | beam.Map(lambda key: (key[0].lower(), key[1]))
+    )
+    allLetterLowerCase = parts[2] | "Lower" >> beam.combiners.Count.PerElement()
 
-  flattenPCollection = (allLetterUpperCase, firstLetterUpperCase, allLetterLowerCase) \
-            | beam.Flatten() \
-            | beam.GroupByKey() \
-            | Output()
+    flattenPCollection = (
+        (allLetterUpperCase, firstLetterUpperCase, allLetterLowerCase)
+        | beam.Flatten()
+        | beam.GroupByKey()
+        | Output()
+    )

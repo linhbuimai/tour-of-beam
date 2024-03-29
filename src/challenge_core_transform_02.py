@@ -18,16 +18,15 @@ from src.utils import Output
 
 
 if __name__ == "__main__":
-    
     csv_path = "gs://apache-beam-samples/game/small/gaming_data.csv"
     p = beam.Pipeline()
-    
+
     raw_data = (
         p
         | "Read csv file" >> beam.io.ReadFromText(csv_path)
         | beam.combiners.Sample.FixedSizeGlobally(10)
         | beam.FlatMap(lambda line: line)
-        | beam.Map(lambda item: (item.split(',')[1], int(item.split(',')[2])))
+        | beam.Map(lambda item: (item.split(",")[1], int(item.split(",")[2])))
         | beam.CombinePerKey(sum)
         | Output()
     )
